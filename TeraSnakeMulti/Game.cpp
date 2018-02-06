@@ -13,12 +13,13 @@ std::string getIP() {
 	std::string input;
 	std::cout << "ENTER SERVER IP FOLLOWED BY THE PORT - EXAMPLE: 127.0.0.1:54000\n> ";
 	std::getline(std::cin, input);
+	return input;
 }
 
 Game::Game(Window* mainWindow) : window(mainWindow) {
 	setup();
 
-	serverConnection = new client(getIP(), );
+	serverConnection = new client();
 }
 
 
@@ -32,16 +33,20 @@ int Game::loop() {
 	while (true) {
 		collisionSNAKE = new Snake();
 		collisionSNAKE->_mainGrid = mainGrid;
+		collisionSNAKE->setColor(20, 250, 20);
 		pollEvents(*window, *playerSnake);
 		
 		playerSnake->update(&playerExpectedLength);
 		
 		// Send nodes to 
-		if (!serverConnection->sendMessage(playerSnake->SnakeToString(true)) == 0) {
-			std::cout << "Message couldn't be sent" << std::endl;
+		if (serverConnection->sendMessage(playerSnake->SnakeToString(true)) == 0) {
+			delete window;
+			std::cout << "STATUS> Connection lost" << std::endl;
+			serverConnection->disconnect();
+			return 1;
 		}
 		Sleep(1);
-		serverConnection->getInformation(collisionSNAKE);
+		serverConnection->getCollision(collisionSNAKE);
 
 		collisionSNAKE->draw();
 

@@ -77,7 +77,9 @@ void Snake::draw() {
 		currentPointer = currentPointer->next;
 	}
 	
-	_lastNode->link->setColor(color.r, color.g, color.b);
+	if (currentPointer != nullptr) {
+		_lastNode->link->setColor(color.r, color.g, color.b);
+	}
 }
 
 void Snake::move(int direction) {

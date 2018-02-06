@@ -7,7 +7,12 @@ Window* window = new Window("TeraSnake", 750, 840);
 std::string playerName;
 int main(int argc, char** argv) {
 	Game game(window);
-	game.loop();
+	int state = game.loop();
 
+	switch (state) {
+	case 1:
+		system("pause");
+		break;
+	}
 	return 0;
 }

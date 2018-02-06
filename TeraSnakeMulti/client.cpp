@@ -19,10 +19,10 @@ client::client(std::string ipAdress, int port){
 		return;
 	}
 
-	// Fill in a int structure
+	// Fill in an int structure
 	sockaddr_in hint;
 	hint.sin_family = AF_INET;
-	hint.sin_port = htons(port);
+	hint.sin_port = htons(54000);
 	inet_pton(AF_INET, ipAdress.c_str(), &hint.sin_addr);
 
 	// Connect to server
@@ -45,6 +45,11 @@ client::client(std::string ipAdress, int port){
 client::~client(){
 	closesocket(sock);
 	WSACleanup();
+	std::cout << "STATUS> Client disconnected" << std::endl;
+}
+
+void client::disconnect() {
+	delete this;
 }
 
 int client::sendMessage(std::string message) {
