@@ -42,8 +42,6 @@ bool player::update(int* expectedLength) {
 		removeFirstPart();
 	}
 
-	//draw();
-
 	return false;
 }
 

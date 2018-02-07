@@ -11,15 +11,31 @@ void pollEvents(Window &window, player &player) {
 
 std::string getIP() {
 	std::string input;
-	std::cout << "ENTER SERVER IP FOLLOWED BY THE PORT - EXAMPLE: 127.0.0.1:54000\n> ";
+	std::cout << "ENTER SERVER IP FOLLOWED BY THE PORT - EXAMPLE: 127.0.0.1\n> ";
 	std::getline(std::cin, input);
 	return input;
 }
 
+int getPORT() {
+	int port;
+	std::string input;
+	while (true) {
+		std::cout << "ENTER PORT> ";
+		std::getline(std::cin, input);
+		try {
+			port = std::stoi(input);
+			break;
+		}
+		catch(...){
+			std::cout << "ERROR: input has to be a number" << std::endl;
+		}
+	}
+	return port;
+}
+
 Game::Game(Window* mainWindow) : window(mainWindow) {
 	setup();
-
-	serverConnection = new client();
+	serverConnection = new client(getIP(), getPORT());
 }
 
 
@@ -44,6 +60,9 @@ int Game::loop() {
 			std::cout << "STATUS> Connection lost" << std::endl;
 			serverConnection->disconnect();
 			return 1;
+		}
+		else {
+			std::cout << "STATUS> Message: " << playerSnake->SnakeToString(true) << std::endl;
 		}
 		Sleep(1);
 		serverConnection->getCollision(collisionSNAKE);
@@ -85,7 +104,7 @@ int Game::setup() {
 }
 
 int Game::setup_colors() {
-	mainGrid->setColor(50, 50, 50);
+	mainGrid->setColor(50, 50, 60);
 	playerSnake->setColor(0, 180, 50);
 	return 1;
 }

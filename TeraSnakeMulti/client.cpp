@@ -22,7 +22,7 @@ client::client(std::string ipAdress, int port){
 	// Fill in an int structure
 	sockaddr_in hint;
 	hint.sin_family = AF_INET;
-	hint.sin_port = htons(54000);
+	hint.sin_port = htons(port);
 	inet_pton(AF_INET, ipAdress.c_str(), &hint.sin_addr);
 
 	// Connect to server
