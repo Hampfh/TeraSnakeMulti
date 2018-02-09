@@ -38,8 +38,9 @@ client::client(std::string ipAdress, int port){
 	std::cout << "SERVER> " << temp << std::endl;
 	recvMessage(&temp);
 	std::cout << "SERVER> Your game ID is: " << temp << std::endl;
-	recvMessage(&temp);
-	std::cout << "SERVER> SEED = " << temp << std::endl;
+	Sleep(1000);
+	//recvMessage(&temp);
+	//std::cout << "SERVER> SEED = " << temp << std::endl;
 }
 
 client::~client(){
