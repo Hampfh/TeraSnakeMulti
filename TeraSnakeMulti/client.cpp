@@ -1,5 +1,6 @@
 #include "client.h"
 
+
 client::client(std::string ipAdress, int port){
 
 	// Initialize winsock
@@ -33,14 +34,14 @@ client::client(std::string ipAdress, int port){
 		WSACleanup();
 		return;
 	}
+
 	std::string temp;
 	recvMessage(&temp);
 	std::cout << "SERVER> " << temp << std::endl;
 	recvMessage(&temp);
 	std::cout << "SERVER> Your game ID is: " << temp << std::endl;
-	Sleep(1000);
-	//recvMessage(&temp);
-	//std::cout << "SERVER> SEED = " << temp << std::endl;
+	recvMessage(&temp);
+	std::cout << "SERVER> SEED = " << temp << std::endl;
 }
 
 client::~client(){
@@ -96,6 +97,9 @@ void client::getCollision(Snake* collisions) {
 		collisions->addNewSpecificPart(coord_x, coord_y);
 
 		receivedMessage = main_matcher.suffix().str();
+	}
+	if (collisions->getLastNode() != nullptr) {
+		std::cout << collisions->getLastNode()->link->getCoords().x << " : " << collisions->getLastNode()->link->getCoords().y << std::endl;
 	}
 }
 

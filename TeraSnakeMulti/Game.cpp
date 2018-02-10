@@ -11,7 +11,7 @@ void pollEvents(Window &window, player &player) {
 
 std::string getIP() {
 	std::string input;
-	std::cout << "ENTER SERVER IP FOLLOWED BY THE PORT - EXAMPLE: 127.0.0.1\n> ";
+	std::cout << "ENTER SERVER IP\n> ";
 	std::getline(std::cin, input);
 	return input;
 }
@@ -45,15 +45,12 @@ Game::~Game()
 
 int Game::loop() {
 
-	Sleep(10);
 	while (true) {
 		collisionSNAKE = new Snake();
 		collisionSNAKE->_mainGrid = mainGrid;
 		collisionSNAKE->setColor(20, 250, 20);
 		pollEvents(*window, *playerSnake);
-		
-		playerSnake->update(&playerExpectedLength);
-		
+				
 		// Send nodes to 
 		if (serverConnection->sendMessage(playerSnake->SnakeToString(true)) == 0) {
 			delete window;
@@ -61,14 +58,14 @@ int Game::loop() {
 			serverConnection->disconnect();
 			return 1;
 		}
-		else {
-			std::cout << "STATUS> Message: " << playerSnake->SnakeToString(true) << std::endl;
-		}
-		Sleep(1);
 		serverConnection->getCollision(collisionSNAKE);
 
 		collisionSNAKE->draw();
 
+		playerSnake->update(&playerExpectedLength);
+
+
+		mainGrid->dot(0, 0)->setColor(200, 12, 55);
 		window->refresh();
 		mainGrid->clear();
 

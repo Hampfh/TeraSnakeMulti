@@ -1,5 +1,7 @@
 #pragma once
 #include <Dot.h>
+#include <string>
+
 #define DIRECTION_UP 0
 #define DIRECTION_RIGHT 1
 #define DIRECTION_DOWN 2
