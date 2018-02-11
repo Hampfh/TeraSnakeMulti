@@ -7,10 +7,12 @@
 class player : public Snake
 {
 public:
-	player(Grid* mainGrid, int start_x, int start_y);
+	player(Grid* mainGrid, int start_x, int start_y, int gridSize_x, int gridSize_y);
 	~player();
 	void pollEvent(SDL_Event &evnt);
-	bool update(int* expectedLength);
+	bool update(int* expectedLength, Snake* collisions);
 	std::string SnakeToString(bool Add);
+public:
+	bool PLAYER_DEAD = false;
 };
 

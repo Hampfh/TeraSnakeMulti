@@ -29,6 +29,8 @@ protected:
 	int _snakeHead_x;
 	int _snakeHead_y;
 
+	int _gridSize_x, _gridSize_y;
+
 	Node* _firstNode = nullptr;
 	Node* _lastNode = nullptr;
 };

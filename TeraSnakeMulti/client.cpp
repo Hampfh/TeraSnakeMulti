@@ -40,8 +40,8 @@ client::client(std::string ipAdress, int port){
 	std::cout << "SERVER> " << temp << std::endl;
 	recvMessage(&temp);
 	std::cout << "SERVER> Your game ID is: " << temp << std::endl;
-	recvMessage(&temp);
-	std::cout << "SERVER> SEED = " << temp << std::endl;
+	/*recvMessage(&temp);
+	std::cout << "SERVER> SEED = " << temp << std::endl;*/
 }
 
 client::~client(){
@@ -86,7 +86,7 @@ void client::getCollision(Snake* collisions) {
 
 	// Receive from server
 	recvMessage(&receivedMessage);
-	
+
 	// Use regex to get coordinates
 	while (std::regex_search(receivedMessage, main_matcher, getCoords)) {
 		for (auto x : main_matcher) {
@@ -97,9 +97,6 @@ void client::getCollision(Snake* collisions) {
 		collisions->addNewSpecificPart(coord_x, coord_y);
 
 		receivedMessage = main_matcher.suffix().str();
-	}
-	if (collisions->getLastNode() != nullptr) {
-		std::cout << collisions->getLastNode()->link->getCoords().x << " : " << collisions->getLastNode()->link->getCoords().y << std::endl;
 	}
 }
 

@@ -22,7 +22,9 @@ private:
 	Snake* collisionSNAKE = nullptr;
 	client* serverConnection;
 
-	int playerExpectedLength = 100;
+	int playerExpectedLength = 10;
 	const int startLength = 3;
+
+	bool running = true;
 };
 

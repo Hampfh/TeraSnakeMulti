@@ -1,10 +1,12 @@
 #include "player.h"
 
-player::player(Grid* mainGrid, int start_x, int start_y) {
+player::player(Grid* mainGrid, int start_x, int start_y, int gridSize_x, int gridSize_y) {
 	_mainGrid = mainGrid;
 	
 	_snakeHead_x = start_x;
 	_snakeHead_y = start_y;
+	_gridSize_x = gridSize_x;
+	_gridSize_y = gridSize_y;
 }
 
 player::~player() {
@@ -34,9 +36,17 @@ void player::pollEvent(SDL_Event &evnt) {
 	}
 }
 
-bool player::update(int* expectedLength) {
-	move(direction);
-	addNewLastPart();
+bool player::update(int* expectedLength, Snake* collisions) {
+	if (!PLAYER_DEAD) {
+		move(direction);
+		addNewLastPart();
+	}
+
+	if (collisions != nullptr && 
+		collisions->collision(_snakeHead_x, _snakeHead_y) &&
+		_snakeHead_x == _lastNode->link->getCoords().x && _snakeHead_y == _lastNode->link->getCoords().y) {
+		PLAYER_DEAD = true;
+	}
 
 	if (snakeLength > *expectedLength) {
 		removeFirstPart();

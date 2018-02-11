@@ -48,11 +48,12 @@ void Snake::addNewSpecificPart(int x, int y) {
 }
 
 bool Snake::collision(int x, int y) {
-	Node* currentPointer = _firstNode;
 
-	if (_firstNode == nullptr && _lastNode == nullptr) {
+	if (_firstNode == nullptr || _lastNode == nullptr) {
 		return false;
 	}
+
+	Node* currentPointer = _firstNode;
 
 	while (currentPointer != _lastNode) {
 		if (currentPointer->link->getCoords().x == x && currentPointer->link->getCoords().y == y) {
@@ -86,15 +87,27 @@ void Snake::move(int direction) {
 	switch (direction) {
 	case DIRECTION_UP:
 		_snakeHead_y--;
+		if (_snakeHead_y < 0) {
+			_snakeHead_y = _gridSize_y - 1;
+		}	
 		break;
 	case DIRECTION_RIGHT:
 		_snakeHead_x++;
+		if (_snakeHead_x > _gridSize_x - 1) {
+			_snakeHead_x = 0;
+		}
 		break;
 	case DIRECTION_DOWN:
 		_snakeHead_y++;
+		if (_snakeHead_y > _gridSize_y - 1) {
+			_snakeHead_y = 0;
+		}
 		break;
 	case DIRECTION_LEFT:
 		_snakeHead_x--;
+		if (_snakeHead_x < 0) {
+			_snakeHead_x = _gridSize_x - 1;
+		}
 		break;
 	}
 }

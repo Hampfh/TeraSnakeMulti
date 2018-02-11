@@ -44,15 +44,26 @@ Game::~Game()
 }
 
 int Game::loop() {
+	std::string messageOut;
 
 	while (true) {
+		pollEvents(*window, *playerSnake);
+			
+		playerSnake->update(&playerExpectedLength, collisionSNAKE);
+
+		delete collisionSNAKE;
 		collisionSNAKE = new Snake();
 		collisionSNAKE->_mainGrid = mainGrid;
 		collisionSNAKE->setColor(20, 250, 20);
-		pollEvents(*window, *playerSnake);
-				
-		// Send nodes to 
-		if (serverConnection->sendMessage(playerSnake->SnakeToString(true)) == 0) {
+
+		messageOut = playerSnake->SnakeToString(true);
+
+		if (playerSnake->PLAYER_DEAD) {
+			messageOut = "d" + messageOut;
+		}
+
+		// Send snake position to server
+		if (serverConnection->sendMessage(messageOut) == 0) {
 			delete window;
 			std::cout << "STATUS> Connection lost" << std::endl;
 			serverConnection->disconnect();
@@ -62,9 +73,6 @@ int Game::loop() {
 
 		collisionSNAKE->draw();
 
-		playerSnake->update(&playerExpectedLength);
-
-
 		mainGrid->dot(0, 0)->setColor(200, 12, 55);
 		window->refresh();
 		mainGrid->clear();
@@ -72,7 +80,6 @@ int Game::loop() {
 		if (window->isClosed()) {
 			return -1;
 		}
-		delete collisionSNAKE;
 	}
 	return 0;
 }
@@ -93,7 +100,7 @@ int Game::setup() {
 	mainGrid->clear();
 	window->connectGrid(mainGrid);
 
-	playerSnake = new player(mainGrid, 20, 20);
+	playerSnake = new player(mainGrid, 20, 20, gridSize_x, gridSize_y);
 
 	setup_colors();
 
