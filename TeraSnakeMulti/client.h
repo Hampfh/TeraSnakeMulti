@@ -14,7 +14,7 @@ public:
 	~client();
 	int sendMessage(std::string message);
 	int recvMessage(std::string *message);
-	void getCollision(Snake* collisions);
+	void getCollision(Snake* collisions, bool *alive);
 	bool recvdEcho();
 	void disconnect();
 private:

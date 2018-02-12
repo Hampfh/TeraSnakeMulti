@@ -59,17 +59,18 @@ int Game::loop() {
 		messageOut = playerSnake->SnakeToString(true);
 
 		if (playerSnake->PLAYER_DEAD) {
-			messageOut = "d" + messageOut;
+			messageOut[0] = 'd';
 		}
 
 		// Send snake position to server
+		std::cout << messageOut << std::endl;
 		if (serverConnection->sendMessage(messageOut) == 0) {
 			delete window;
 			std::cout << "STATUS> Connection lost" << std::endl;
 			serverConnection->disconnect();
 			return 1;
 		}
-		serverConnection->getCollision(collisionSNAKE);
+		serverConnection->getCollision(collisionSNAKE, &playerSnake->PLAYER_DEAD);
 
 		collisionSNAKE->draw();
 
