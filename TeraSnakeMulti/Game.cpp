@@ -73,7 +73,6 @@ int Game::loop() {
 
 		collisionSNAKE->draw();
 
-		mainGrid->dot(0, 0)->setColor(200, 12, 55);
 		window->refresh();
 		mainGrid->clear();
 
