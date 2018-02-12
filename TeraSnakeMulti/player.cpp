@@ -46,6 +46,7 @@ bool player::update(int* expectedLength, Snake* collisions) {
 		collisions->collision(_snakeHead_x, _snakeHead_y) &&
 		_snakeHead_x == _lastNode->link->getCoords().x && _snakeHead_y == _lastNode->link->getCoords().y) {
 		PLAYER_DEAD = true;
+		std::cout << "I DIED" << std::endl;
 	}
 
 	if (snakeLength > *expectedLength) {

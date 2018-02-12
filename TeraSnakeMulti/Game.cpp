@@ -61,9 +61,7 @@ int Game::loop() {
 		if (playerSnake->PLAYER_DEAD) {
 			messageOut[0] = 'd';
 		}
-
 		// Send snake position to server
-		std::cout << messageOut << std::endl;
 		if (serverConnection->sendMessage(messageOut) == 0) {
 			delete window;
 			std::cout << "STATUS> Connection lost" << std::endl;

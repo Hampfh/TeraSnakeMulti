@@ -77,7 +77,7 @@ int client::recvMessage(std::string *message) {
 	}
 }
 
-void client::getCollision(Snake* collisions, bool *alive) {
+void client::getCollision(Snake* collisions, bool *dead) {
 	// Initialization
 	int coord_x, coord_y;
 	std::string receivedMessage;
@@ -88,10 +88,10 @@ void client::getCollision(Snake* collisions, bool *alive) {
 	recvMessage(&receivedMessage);
 
 	if (receivedMessage[0] == 'A') {
-		*alive = true;
+		*dead = false;
 	}
-	else if (receivedMessage[0] == 'D') {
-		*alive = false;
+	else if (receivedMessage[0] == 'd') {
+		*dead = true;
 	}
 
 	// Use regex to get coordinates
