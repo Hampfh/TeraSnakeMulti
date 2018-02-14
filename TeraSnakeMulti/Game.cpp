@@ -56,11 +56,8 @@ int Game::loop() {
 		collisionSNAKE->_mainGrid = mainGrid;
 		collisionSNAKE->setColor(20, 250, 20);
 
-		messageOut = playerSnake->SnakeToString(true);
+		messageOut = playerSnake->SnakeToString();
 
-		if (playerSnake->PLAYER_DEAD) {
-			messageOut[0] = 'd';
-		}
 		// Send snake position to server
 		if (serverConnection->sendMessage(messageOut) == 0) {
 			delete window;

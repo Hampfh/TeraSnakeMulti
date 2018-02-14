@@ -21,6 +21,9 @@ Snake::~Snake() {
 
 void Snake::addNewLastPart() {
 	Node* temp = new Node();
+	temp->thisNodeColor.r = -1;
+	temp->thisNodeColor.g = -1;
+	temp->thisNodeColor.b = -1;
 	if (_firstNode == nullptr) {
 		_firstNode = temp;
 		_lastNode = temp;
@@ -33,8 +36,11 @@ void Snake::addNewLastPart() {
 	snakeLength++;
 }
 
-void Snake::addNewSpecificPart(int x, int y) {
+void Snake::addNewSpecificPart(int x, int y, int r, int g, int b) {
 	Node* temp = new Node();
+	temp->thisNodeColor.r = r;
+	temp->thisNodeColor.g = g;
+	temp->thisNodeColor.b = b;
 	if (_firstNode == nullptr) {
 		_firstNode = temp;
 		_lastNode = temp;
@@ -74,7 +80,12 @@ void Snake::draw() {
 	Node* currentPointer = _firstNode;
 
 	while (currentPointer != _lastNode) {
-		currentPointer->link->setColor(color.r, color.g, color.b);
+		if (currentPointer->thisNodeColor.r == -1 || currentPointer->thisNodeColor.g == -1 || currentPointer->thisNodeColor.b == -1) {
+			currentPointer->link->setColor(color.r, color.g, color.b);
+		}
+		else {
+			currentPointer->link->setColor(currentPointer->thisNodeColor.r, currentPointer->thisNodeColor.g, currentPointer->thisNodeColor.b);
+		}
 		currentPointer = currentPointer->next;
 	}
 	

@@ -16,6 +16,7 @@
 struct Node {
 	Node* next = nullptr;
 	Dot* link = nullptr;
+	colorTemplate thisNodeColor;
 };
 
 struct arrayStruct {

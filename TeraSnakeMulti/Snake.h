@@ -7,7 +7,7 @@ public:
 	Snake();
 	~Snake();
 	void addNewLastPart();
-	void addNewSpecificPart(int x, int y);
+	void addNewSpecificPart(int x, int y, int r = -1, int g = -1, int b = -1);
 	bool collision(int x, int y);
 	void draw();
 	void move(int direction);

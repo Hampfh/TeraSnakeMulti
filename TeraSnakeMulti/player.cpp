@@ -46,29 +46,28 @@ bool player::update(int* expectedLength, Snake* collisions) {
 		collisions->collision(_snakeHead_x, _snakeHead_y) &&
 		_snakeHead_x == _lastNode->link->getCoords().x && _snakeHead_y == _lastNode->link->getCoords().y) {
 		PLAYER_DEAD = true;
-		std::cout << "I DIED" << std::endl;
 	}
 
 	if (snakeLength > *expectedLength) {
 		removeFirstPart();
 	}
 
-	draw();
+	/*draw();
 
-	this->_lastNode->link->setColor(20, 20, 50);
+	this->_lastNode->link->setColor(20, 20, 50);*/
 
 	return false;
 }
 
-std::string player::SnakeToString(bool Add) {
+std::string player::SnakeToString() {
 	Node* currentNode = _firstNode;
 
 	int tempX, tempY;
 	std::string messageOut = "";
 	std::stringstream ss;
 
-	Add == true ? messageOut.append("A<|") : messageOut.append("R<|");
-	
+	PLAYER_DEAD == false ? messageOut.append("A<|") : messageOut.append("D<|");
+
 	while (currentNode != nullptr) {
 		
 		tempX = currentNode->link->getCoords().x;

@@ -11,7 +11,7 @@ public:
 	~player();
 	void pollEvent(SDL_Event &evnt);
 	bool update(int* expectedLength, Snake* collisions);
-	std::string SnakeToString(bool Add);
+	std::string SnakeToString();
 public:
 	bool PLAYER_DEAD = false;
 };
