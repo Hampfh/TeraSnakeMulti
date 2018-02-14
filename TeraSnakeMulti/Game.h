@@ -3,6 +3,7 @@
 #include <Grid.h>
 #include "player.h"
 #include <Window.h>
+#include <ctime>
 
 class Game
 {

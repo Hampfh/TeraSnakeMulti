@@ -84,6 +84,7 @@ void Snake::draw() {
 			currentPointer->link->setColor(color.r, color.g, color.b);
 		}
 		else {
+			std::cout << "SPECIAL COLOR APPLIED" << std::endl;
 			currentPointer->link->setColor(currentPointer->thisNodeColor.r, currentPointer->thisNodeColor.g, currentPointer->thisNodeColor.b);
 		}
 		currentPointer = currentPointer->next;

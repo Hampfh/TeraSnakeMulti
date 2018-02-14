@@ -38,7 +38,6 @@ Game::Game(Window* mainWindow) : window(mainWindow) {
 	serverConnection = new client(getIP(), getPORT());
 }
 
-
 Game::~Game()
 {
 }
@@ -47,6 +46,7 @@ int Game::loop() {
 	std::string messageOut;
 
 	while (true) {
+		std::clock_t begin = clock();
 		pollEvents(*window, *playerSnake);
 			
 		playerSnake->update(&playerExpectedLength, collisionSNAKE);
@@ -71,6 +71,11 @@ int Game::loop() {
 
 		window->refresh();
 		mainGrid->clear();
+
+		std::clock_t end = clock();
+
+		double elapsed_secs = double(end - begin);
+		std::cout << elapsed_secs << std::endl;
 
 		if (window->isClosed()) {
 			return -1;
