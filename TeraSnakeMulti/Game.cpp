@@ -44,8 +44,12 @@ Game::~Game()
 
 int Game::loop() {
 	std::string messageOut;
+	int laps = 0;
 
 	while (true) {
+		if (playerSnake->PLAYER_DEAD && laps < 4) {
+			playerSnake->PLAYER_DEAD = false;
+		}
 		std::clock_t begin = clock();
 		pollEvents(*window, *playerSnake);
 			
@@ -65,7 +69,7 @@ int Game::loop() {
 			serverConnection->disconnect();
 			return 1;
 		}
-		serverConnection->getCollision(collisionSNAKE, &playerSnake->PLAYER_DEAD);
+		serverConnection->getCollision(collisionSNAKE, &playerSnake->PLAYER_DEAD);		
 
 		collisionSNAKE->draw();
 
@@ -74,12 +78,13 @@ int Game::loop() {
 
 		std::clock_t end = clock();
 
-		double elapsed_secs = double(end - begin);
-		std::cout << elapsed_secs << std::endl;
+		double elapsed_time = double(end - begin);
+		std::cout << elapsed_time << std::endl;
 
 		if (window->isClosed()) {
 			return -1;
 		}
+		laps++;
 	}
 	return 0;
 }

@@ -56,15 +56,21 @@ int client::sendMessage(std::string message) {
 	// Temporarly saves the message inside the class
 	messageOut = message;
 	// Send message
+	std::clock_t beginCon = clock();
+
 	if (send(sock, message.c_str(), message.size() + 1, 0) != SOCKET_ERROR) {
+		std::clock_t endCon = clock();
+		std::cout << endCon - beginCon << " milliseconds" << std::endl;
 		return 1;
 	}
 	return 0;
 }
 
 int client::recvMessage(std::string *message) {
-	ZeroMemory(messageIn, 4096);
-	bytesReceived = recv(sock, messageIn, 4096, 0);
+	ZeroMemory(messageIn, 1024);
+	int bytesReceived = recv(sock, messageIn, 1024, 0);
+	
+	std::cout << messageIn << std::endl;
 	*message = messageIn;
 
 	if (bytesReceived > 0) {
@@ -87,7 +93,7 @@ void client::getCollision(Snake* collisions, bool *dead) {
 
 	// Receive from server
 	recvMessage(&receivedMessage);
-
+	
 	receivedMessage[0] == 'A' ? *dead = false : *dead = true;
 	
 	// Use regex to get coordinates
@@ -100,16 +106,5 @@ void client::getCollision(Snake* collisions, bool *dead) {
 		collisions->addNewSpecificPart(coord_x, coord_y);
 
 		receivedMessage = main_matcher.suffix().str();
-	}
-}
-
-bool client::recvdEcho() {
-	ZeroMemory(messageIn, 4096);
-	bytesReceived = recv(sock, messageIn, 4096, 0);
-	if (messageOut.c_str() == messageIn) {
-		return true;
-	}
-	else {
-		return false;
 	}
 }

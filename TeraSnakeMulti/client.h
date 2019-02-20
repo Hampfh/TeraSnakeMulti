@@ -21,10 +21,9 @@ private:
 	int CLIENT_ID;
 	SOCKET sock;
 	int sendResult;
-	int bytesReceived;
 
 	// In and Output from server
-	char messageIn[4096];
+	char messageIn[1024];
 	std::string messageOut;
 };
 
