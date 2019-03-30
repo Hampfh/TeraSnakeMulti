@@ -35,14 +35,20 @@ int getPORT() {
 
 Game::Game(Window* mainWindow) : window(mainWindow) {
 	setup();
-	serverConnection = new client(getIP(), getPORT());
+	//serverConnection = new client(getIP(), getPORT());
+	serverConnection = new client("127.0.0.1", 15000);
 }
 
 Game::~Game()
 {
 }
 
-int Game::loop() {
+int Game::Loop() {
+	playerSnake->addNewSpecificPart(25, 25);
+
+	playerSnake->addNewSpecificPart(22, 21);
+
+	playerSnake->addNewSpecificPart(2, 8);
 	std::string messageOut;
 	int laps = 0;
 
@@ -50,7 +56,6 @@ int Game::loop() {
 		if (playerSnake->PLAYER_DEAD && laps < 4) {
 			playerSnake->PLAYER_DEAD = false;
 		}
-		std::clock_t begin = clock();
 		pollEvents(*window, *playerSnake);
 			
 		playerSnake->update(&playerExpectedLength, collisionSNAKE);
@@ -61,7 +66,7 @@ int Game::loop() {
 		collisionSNAKE->setColor(20, 250, 20);
 
 		messageOut = playerSnake->SnakeToString();
-
+		
 		// Send snake position to server
 		if (serverConnection->sendMessage(messageOut) == 0) {
 			delete window;
@@ -69,24 +74,19 @@ int Game::loop() {
 			serverConnection->disconnect();
 			return 1;
 		}
+		
 		serverConnection->getCollision(collisionSNAKE, &playerSnake->PLAYER_DEAD);		
-
+		
 		collisionSNAKE->draw();
 
 		window->refresh();
 		mainGrid->clear();
-
-		std::clock_t end = clock();
-
-		double elapsed_time = double(end - begin);
-		std::cout << elapsed_time << std::endl;
 
 		if (window->isClosed()) {
 			return -1;
 		}
 		laps++;
 	}
-	return 0;
 }
 
 int Game::reset() {

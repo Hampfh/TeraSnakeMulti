@@ -1,6 +1,5 @@
 #include "client.h"
 
-
 client::client(std::string ipAdress, int port){
 
 	// Initialize winsock
@@ -55,12 +54,13 @@ void client::disconnect() {
 int client::sendMessage(std::string message) {
 	// Temporarly saves the message inside the class
 	messageOut = message;
+
 	// Send message
 	std::clock_t beginCon = clock();
 
 	if (send(sock, message.c_str(), message.size() + 1, 0) != SOCKET_ERROR) {
 		std::clock_t endCon = clock();
-		std::cout << endCon - beginCon << " milliseconds" << std::endl;
+		//std::cout << endCon - beginCon << " milliseconds" << std::endl;
 		return 1;
 	}
 	return 0;
@@ -70,7 +70,6 @@ int client::recvMessage(std::string *message) {
 	ZeroMemory(messageIn, 1024);
 	int bytesReceived = recv(sock, messageIn, 1024, 0);
 	
-	std::cout << messageIn << std::endl;
 	*message = messageIn;
 
 	if (bytesReceived > 0) {
@@ -91,9 +90,15 @@ void client::getCollision(Snake* collisions, bool *dead) {
 	std::regex getSnake("<(\\w)[^ >]+>");
 	std::smatch second_matcher;
 
+	std::clock_t begin = clock();
 	// Receive from server
 	recvMessage(&receivedMessage);
-	
+	std::clock_t end = clock();
+
+
+
+	double elapsed_time = double(end - begin);
+	//std::cout << elapsed_time << std::endl;
 	receivedMessage[0] == 'A' ? *dead = false : *dead = true;
 	
 	// Use regex to get coordinates
@@ -102,6 +107,7 @@ void client::getCollision(Snake* collisions, bool *dead) {
 			coord_x = std::stoi(x.str().substr(0, x.str().find(":")));
 			coord_y = std::stoi(x.str().substr(x.str().find(":") + 1));
 		}
+
 		// Append values to the collisions object
 		collisions->addNewSpecificPart(coord_x, coord_y);
 

@@ -52,9 +52,9 @@ bool player::update(int* expectedLength, Snake* collisions) {
 		removeFirstPart();
 	}
 
-	/*draw();
+	draw();
 
-	this->_lastNode->link->setColor(20, 20, 50);*/
+	this->_lastNode->link->setColor(20, 20, 50);
 
 	return false;
 }

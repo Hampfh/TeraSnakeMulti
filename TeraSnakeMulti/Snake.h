@@ -11,6 +11,7 @@ public:
 	bool collision(int x, int y);
 	void draw();
 	void move(int direction);
+	void move(int x, int y);
 	void removeFirstPart();
 	void removeSpecificPart(int x, int y);
 	void setColor(int r, int g, int b);

@@ -10,7 +10,7 @@ class Game
 public:
 	Game(Window* mainWindow);
 	~Game();
-	int loop();
+	int Loop();
 	int reset();
 	int setup();
 	int setup_colors();

@@ -124,6 +124,11 @@ void Snake::move(int direction) {
 	}
 }
 
+void Snake::move(const int x, const int y) {
+	_snakeHead_x = x;
+	_snakeHead_y = y;
+}
+
 void Snake::removeFirstPart() {
 	Node* prev = _firstNode;
 	_firstNode = _firstNode->next;
