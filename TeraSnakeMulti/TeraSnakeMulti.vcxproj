@@ -132,18 +132,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="client.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="player.cpp" />
-    <ClCompile Include="Snake.cpp" />
+    <ClCompile Include="src\ExternalSnake.cpp" />
+    <ClCompile Include="src\client.cpp" />
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\player.cpp" />
+    <ClCompile Include="src\Snake.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="client.h" />
-    <ClInclude Include="definitions.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="player.h" />
-    <ClInclude Include="Snake.h" />
+    <ClInclude Include="src\ExternalSnake.h" />
+    <ClInclude Include="src\client.h" />
+    <ClInclude Include="src\definitions.h" />
+    <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\player.h" />
+    <ClInclude Include="src\Snake.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

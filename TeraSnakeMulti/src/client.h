@@ -17,8 +17,11 @@ public:
 	void getCollision(Snake* collisions, bool *dead);
 	bool recvdEcho();
 	void disconnect();
+
+	std::vector<std::vector<int>> StripCoordinates(std::string string) const;
+	int GetId() const { return clientId_; };
 private:
-	int CLIENT_ID;
+	int clientId_;
 	SOCKET sock;
 	int sendResult;
 

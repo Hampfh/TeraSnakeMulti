@@ -53,7 +53,7 @@ void Snake::addNewSpecificPart(int x, int y, int r, int g, int b) {
 	snakeLength++;
 }
 
-bool Snake::collision(int x, int y) {
+bool Snake::Collision(const int x, const int y) {
 
 	if (_firstNode == nullptr || _lastNode == nullptr) {
 		return false;
@@ -84,14 +84,14 @@ void Snake::draw() {
 			currentPointer->link->setColor(color.r, color.g, color.b);
 		}
 		else {
-			std::cout << "SPECIAL COLOR APPLIED" << std::endl;
 			currentPointer->link->setColor(currentPointer->thisNodeColor.r, currentPointer->thisNodeColor.g, currentPointer->thisNodeColor.b);
 		}
 		currentPointer = currentPointer->next;
 	}
 	
+	// Draw the enemy head
 	if (currentPointer != nullptr) {
-		_lastNode->link->setColor(color.r, color.g, color.b);
+		_lastNode->link->setColor(head_.r, head_.g, head_.b);
 	}
 }
 
@@ -139,6 +139,10 @@ void Snake::removeSpecificPart(int x, int y) {
 	Node* currentPointer = _firstNode;
 	Node* prev = _firstNode;
 
+	if (currentPointer == nullptr) {
+		return;
+	}
+
 	while (currentPointer != _lastNode) {
 		if (currentPointer->link->getCoords().x == x && currentPointer->link->getCoords().y == y) {
 			// If the specified node is the first
@@ -151,7 +155,6 @@ void Snake::removeSpecificPart(int x, int y) {
 				prev->next = currentPointer->next;
 				delete currentPointer;
 			}
-			return;
 		}
 
 		prev = currentPointer;
@@ -169,4 +172,10 @@ void Snake::setColor(int r, int g, int b) {
 	color.r = r;
 	color.g = g;
 	color.b = b;
+}
+
+void Snake::SetHeadColor(const int r, const int g, const int b) {
+	head_.r = r;
+	head_.g = g;
+	head_.b = b;
 }
