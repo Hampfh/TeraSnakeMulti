@@ -50,10 +50,10 @@ int Game::Loop() {
 	gameRunning_ = false;
 
 	while (true) {
-		if (playerSnake->PLAYER_DEAD && laps < 4) {
-			playerSnake->PLAYER_DEAD = false;
+		if (playerSnake->dead && laps < 4) {
+			playerSnake->dead = false;
 		}
-		playerSnake->PLAYER_DEAD = false;
+		playerSnake->dead = false;
 		pollEvents(*window, *playerSnake);
 
 		std::string outgoing;
@@ -91,9 +91,6 @@ int Game::Loop() {
 			break;
 		}
 		laps++;
-	}
-	while (true) {
-		
 	}
 }
 

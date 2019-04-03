@@ -15,8 +15,6 @@ public:
 	bool Update(int* expectedLength, ExternalSnake* enemy_first, ExternalSnake* enemy_last);
 	std::string SnakeToString();
 
-	bool PLAYER_DEAD = false;
-	std::vector<std::vector<int>> addCoordinates;
-	std::vector<std::vector<int>> removeCoordinates;
+	bool dead = false;
 };
 
