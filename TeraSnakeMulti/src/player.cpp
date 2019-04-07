@@ -36,7 +36,7 @@ void player::pollEvent(SDL_Event &evnt) {
 	}
 }
 
-bool player::Update(int* expectedLength, ExternalSnake* enemy_first, ExternalSnake* enemy_last) {
+bool player::Update(int* expectedLength, ExternalSnake* enemy_first) {
 
 	if (!dead) {
 		move(direction);
@@ -50,7 +50,7 @@ bool player::Update(int* expectedLength, ExternalSnake* enemy_first, ExternalSna
 		while (current != nullptr) {
 			if (current->Collision(_snakeHead_x, _snakeHead_y)) {
 				dead = true;
-				continue;
+				break;
 			}
 
 			current = current->next;

@@ -90,7 +90,7 @@ void Snake::draw() {
 	}
 	
 	// Draw the enemy head
-	if (currentPointer != nullptr) {
+	if (_lastNode != nullptr) {
 		_lastNode->link->setColor(head_.r, head_.g, head_.b);
 	}
 }
