@@ -203,7 +203,7 @@ void Game::Interpret(const std::string& incoming) {
 						RemoveExternalSnake(current->id);
 					} 
 					// Start game loop
-					else if (command.str()[0] == 'R') {
+					else if (command.str()[0] == 'S') {
 						gameRunning_ = true;
 					}
 
