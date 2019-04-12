@@ -11,7 +11,7 @@
 class Game
 {
 public:
-	Game(Window* mainWindow);
+	Game(Window* main_window);
 	~Game();
 	int Loop();
 	int reset();
@@ -19,11 +19,11 @@ public:
 	int setup_colors();
 	void Interpret(const std::string& incoming);
 	ExternalSnake* GetSnake(int id) const;
-	void RemoveExternalSnake(int id) const;
+	void RemoveExternalSnake(int id);
 	ExternalSnake* AddExternalSnake(int id, int x, int y);
-	void UpdateExternals();
+	void UpdateExternals() const;
 private:
-	int gridSize_x = 50, gridSize_y = 50;
+	int gridWidth = 50, gridHeight = 50;
 
 	bool gameRunning_;
 

@@ -1,11 +1,13 @@
 #include "Game.h"
 
-void pollEvents(Window &window, player &player) {
+void pollEvents(Window* window, player* player) {
 	SDL_Event evnt;
 
 	if (SDL_PollEvent(&evnt)) {
-		window.pollEvent(evnt);
-		player.pollEvent(evnt);
+		window->pollEvent(evnt);
+		if (player != nullptr && !player->dead) {
+			player->pollEvent(evnt);
+		}
 	}
 }
 
@@ -33,7 +35,7 @@ int getPORT() {
 	return port;
 }
 
-Game::Game(Window* mainWindow) : window(mainWindow) {
+Game::Game(Window* main_window) : window(main_window) {
 	//serverConnection = new client(getIP(), getPORT());
 	serverConnection_ = new client("127.0.0.1", 15000);
 	setup();
@@ -50,35 +52,44 @@ int Game::Loop() {
 	gameRunning_ = false;
 
 	while (true) {
-		if (playerSnake->dead && laps < 4) {
+		if (playerSnake->dead && laps < 4 && laps >= 0) {
 			playerSnake->dead = false;
 		}
-		playerSnake->dead = false;
-		pollEvents(*window, *playerSnake);
+		pollEvents(window, playerSnake);
 
 		std::string outgoing;
 
-		if (gameRunning_) {
-			playerSnake->Update(&playerExpectedLength, enemyFirst_, enemyLast_);
+		if (gameRunning_ && playerSnake != nullptr && !playerSnake->dead) {
+			playerSnake->Update(&playerExpectedLength, enemyFirst_);
 
 			outgoing = "M" + std::to_string(playerSnake->getDirection());
-		} else {
+		} else if (playerSnake != nullptr && !playerSnake->dead) {
 			outgoing = "Px" + std::to_string(playerSnake->GetHeadX()) + "|Py" + std::to_string(playerSnake->GetHeadY());
+		} else {
+			outgoing = "";
+		}
+
+		if (playerSnake != nullptr && playerSnake->dead) {
+			std::cout << "I died" << std::endl;
+			outgoing.append("|D");
+			delete playerSnake;
+			playerSnake = nullptr;
 		}
 
 		// Send snake position to server
+		std::cout << "Sent: " << outgoing << std::endl;
 		if (serverConnection_->sendMessage(outgoing) != 0) {
 			std::cout << "STATUS> Connection lost" << std::endl;
 			serverConnection_->disconnect();
 			delete window;
-			return 1;
+			break;
 		}
 
 		std::string incoming;
 		auto start = std::chrono::steady_clock::now();
 		serverConnection_->recvMessage(&incoming);
 		auto end = std::chrono::steady_clock::now();
-		std::cout << "Receive took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		//std::cout << "Receive took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 		Interpret(incoming);
 
@@ -90,8 +101,12 @@ int Game::Loop() {
 		if (window->isClosed()) {
 			break;
 		}
-		laps++;
+		if (playerSnake != nullptr && !playerSnake->dead) {
+			laps++;
+		}
 	}
+	system("pause");
+	return 0;
 }
 
 int Game::reset() {
@@ -104,13 +119,13 @@ int Game::reset() {
 
 int Game::setup() {
 
-	mainGrid = new Grid(gridSize_x, gridSize_y);
+	mainGrid = new Grid(gridWidth, gridHeight);
 	mainGrid->setSpacing(0);
 	mainGrid->setDotSize(15);
 	mainGrid->clear();
 	window->connectGrid(mainGrid);
 
-	playerSnake = new player(mainGrid, 2 * serverConnection_->GetId(), 20, gridSize_x, gridSize_y);
+	playerSnake = new player(mainGrid, 2 * serverConnection_->GetId(), 20, gridWidth, gridHeight);
 
 	setup_colors();
 
@@ -184,10 +199,11 @@ void Game::Interpret(const std::string& incoming) {
 					}
 					// Check if client has disconnected
 					else if (command.str()[0] == 'D' && current != nullptr) {
+						std::cout << "Received remove command on snake: " << current->id << std::endl;
 						RemoveExternalSnake(current->id);
 					} 
 					// Start game loop
-					else if (command.str()[0] == 'R') {
+					else if (command.str()[0] == 'S') {
 						gameRunning_ = true;
 					}
 
@@ -219,16 +235,25 @@ ExternalSnake* Game::GetSnake(const int id) const {
 	return nullptr;
 }
 
-void Game::RemoveExternalSnake(const int id) const {
+void Game::RemoveExternalSnake(const int id) {
 	ExternalSnake* current = enemyFirst_;
 	ExternalSnake* prev = nullptr;
 
 	while (current != nullptr) {
 		if (current->id == id) {
-			if (prev != nullptr) {
+			
+			if (current == enemyFirst_) {
+				enemyFirst_ = enemyFirst_->next;
+			} else if (current == enemyLast_) {
+				enemyLast_ = prev;
+				enemyLast_->next = nullptr;
+			} else {
 				prev->next = current->next;
 			}
+			// Delete the snake
 			delete current;
+			
+			return;
 		}
 		prev = current;
 		current = current->next;
@@ -236,7 +261,7 @@ void Game::RemoveExternalSnake(const int id) const {
 }
 
 ExternalSnake* Game::AddExternalSnake(const int id, const int x, const int y) {
-	ExternalSnake* newSnake = new ExternalSnake(mainGrid, x, y, gridSize_x, gridSize_y);
+	ExternalSnake* newSnake = new ExternalSnake(mainGrid, x, y, gridWidth, gridHeight);
 
 	// Randomize a color for the new snake
 	time_t temp = id;
@@ -263,7 +288,7 @@ ExternalSnake* Game::AddExternalSnake(const int id, const int x, const int y) {
 	return newSnake;
 }
 
-void Game::UpdateExternals() {
+void Game::UpdateExternals() const {
 	ExternalSnake* current = enemyFirst_;
 
 	while (current != nullptr) {

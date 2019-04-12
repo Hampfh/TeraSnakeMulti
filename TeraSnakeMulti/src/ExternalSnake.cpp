@@ -14,13 +14,14 @@ ExternalSnake::ExternalSnake(Grid* main_grid, const int start_x, const int start
 ExternalSnake::~ExternalSnake() {
 	auto current = _firstNode;
 	auto prev = _firstNode;
-	while (current != nullptr) {
+	while (current != _firstNode) {
 		current = current->next;
 		delete prev;
 		prev = current;
 	}
+	_firstNode = nullptr;
+	_lastNode = nullptr;
 }
-
 
 void ExternalSnake::Update(const int* const length) {
 	while (snakeLength > *length) {
