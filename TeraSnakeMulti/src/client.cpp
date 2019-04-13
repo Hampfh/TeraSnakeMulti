@@ -34,14 +34,24 @@ client::client(std::string ipAdress, int port){
 		return;
 	}
 
-	std::string temp;
-	recvMessage(&temp);
-	std::cout << "SERVER> " << temp << std::endl;
-	recvMessage(&temp);
-	clientId_ = std::stoi(temp);
-	std::cout << "SERVER> Your game ID is: " << temp << std::endl;
-	recvMessage(&temp);
-	std::cout << "SERVER> Your SEED is: " << temp << std::endl;
+	// Client receives welcome message, id and the server seed
+	std::string incoming;
+	recvMessage(&incoming);
+
+	const std::regex regexClient("[^\\|]+");
+	std::smatch matcher;
+
+	std::vector<std::string> segment;
+
+	while (std::regex_search(incoming, matcher, regexClient)) {
+		segment.push_back(matcher[0].str());
+		incoming = matcher.suffix().str();
+	}
+	
+	std::cout << segment[0] << std::endl;
+	std::cout << "Assigned id: " << segment[1] << " by server" << std::endl;
+	std::cout << "Server seed: " << segment[2] << std::endl;
+	clientId_ = std::stoi(segment[1]);
 }
 
 client::~client(){
@@ -70,20 +80,14 @@ int client::recvMessage(std::string *message) {
 	ZeroMemory(messageIn, 1024);
 	int bytesReceived = recv(sock, messageIn, 1024, 0);
 
-	try {
-		*message = std::string(messageIn, bytesReceived);
-	} catch (std::exception& e) {
-		std::cout << "Exception: " << e.what() << std::endl;
+	if (bytesReceived < 0) {
 		this->disconnect();
-		return 0;
-	}
-
-	if (bytesReceived > 0) {
 		return 1;
 	}
-	else {
-		return 0;
-	}
+
+	*message = std::string(messageIn, bytesReceived + 1);
+
+	return 0;
 }
 
 void client::getCollision(Snake* collisions, bool *dead) {
