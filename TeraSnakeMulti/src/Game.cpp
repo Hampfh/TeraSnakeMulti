@@ -80,7 +80,7 @@ int Game::Loop() {
 		std::cout << "Sent: " << outgoing << std::endl;
 		if (serverConnection_->sendMessage(outgoing) != 0) {
 			std::cout << "STATUS> Connection lost" << std::endl;
-			serverConnection_->disconnect();
+			delete serverConnection_;
 			delete window;
 			break;
 		}

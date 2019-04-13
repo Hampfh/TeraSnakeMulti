@@ -60,10 +60,6 @@ client::~client(){
 	std::cout << "STATUS> Client disconnected" << std::endl;
 }
 
-void client::disconnect() {
-	delete this;
-}
-
 int client::sendMessage(const std::string message) {
 	// Temporarly saves the message inside the class
 	messageOut = message;
@@ -81,7 +77,6 @@ int client::recvMessage(std::string *message) {
 	int bytesReceived = recv(sock, messageIn, 1024, 0);
 
 	if (bytesReceived < 0) {
-		this->disconnect();
 		return 1;
 	}
 

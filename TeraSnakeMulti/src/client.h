@@ -16,7 +16,6 @@ public:
 	int recvMessage(std::string *message);
 	void getCollision(Snake* collisions, bool *dead);
 	bool recvdEcho();
-	void disconnect();
 
 	std::vector<std::vector<int>> StripCoordinates(std::string string) const;
 	int GetId() const { return clientId_; };
