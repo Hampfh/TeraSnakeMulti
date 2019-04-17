@@ -121,7 +121,11 @@ void Snake::move(int direction) {
 			_snakeHead_x = _gridSize_x - 1;
 		}
 		break;
+	default:
+		return;
 	}
+	// If direction is valid then assign the snakes direction to it
+	this->direction = direction;
 }
 
 void Snake::move(const int x, const int y) {

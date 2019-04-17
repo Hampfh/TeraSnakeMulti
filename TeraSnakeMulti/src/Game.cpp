@@ -51,16 +51,35 @@ int Game::Loop() {
 
 	gameRunning_ = false;
 
+	serverConnection_->sendMessage("");
+
+	std::string incoming;
+	std::string outgoing;
+
 	while (true) {
-		if (playerSnake->dead && laps < 4 && laps >= 0) {
-			playerSnake->dead = false;
-		}
 		pollEvents(window, playerSnake);
 
-		std::string outgoing;
+		auto start = std::chrono::steady_clock::now();
+		serverConnection_->recvMessage(&incoming);
+		std::cout << "Received: " << incoming << std::endl;
+		auto end = std::chrono::steady_clock::now();
+		//std::cout << "Receive took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
+		Interpret(incoming);
+
+		//if (playerSnake->dead && laps < 4 && laps >= 0) {
+		//	playerSnake->dead = false;
+		//}
+
+		// Update enemies
+		if (gameRunning_) {
+			UpdateExternals();
+		}
+
+		// Update player
 		if (gameRunning_ && playerSnake != nullptr && !playerSnake->dead) {
-			playerSnake->Update(&playerExpectedLength, enemyFirst_);
+			if (laps > 1)
+				playerSnake->Update(&playerExpectedLength, enemyFirst_);
 
 			outgoing = "M" + std::to_string(playerSnake->getDirection());
 		} else if (playerSnake != nullptr && !playerSnake->dead) {
@@ -69,6 +88,7 @@ int Game::Loop() {
 			outgoing = "";
 		}
 
+		// Detect death
 		if (playerSnake != nullptr && playerSnake->dead) {
 			std::cout << "I died" << std::endl;
 			outgoing.append("|D");
@@ -76,8 +96,7 @@ int Game::Loop() {
 			playerSnake = nullptr;
 		}
 
-		// Send snake position to server
-		std::cout << "Sent: " << outgoing << std::endl;
+		// Send
 		if (serverConnection_->sendMessage(outgoing) != 0) {
 			std::cout << "STATUS> Connection lost" << std::endl;
 			delete serverConnection_;
@@ -85,23 +104,13 @@ int Game::Loop() {
 			break;
 		}
 
-		std::string incoming;
-		auto start = std::chrono::steady_clock::now();
-		serverConnection_->recvMessage(&incoming);
-		auto end = std::chrono::steady_clock::now();
-		//std::cout << "Receive took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
-
-		Interpret(incoming);
-
-		UpdateExternals();
-
-		window->refresh();
+		window->refresh(0, 0, 0);
 		mainGrid->clear();
 
 		if (window->isClosed()) {
 			break;
 		}
-		if (playerSnake != nullptr && !playerSnake->dead) {
+		if (playerSnake != nullptr && !playerSnake->dead && gameRunning_) {
 			laps++;
 		}
 	}
@@ -184,8 +193,8 @@ void Game::Interpret(const std::string& incoming) {
 					// Specific Moving direction
 					if (command.str()[0] == 'M' && current != nullptr) {
 						std::string value = command.str().substr(1, command.str().size() - 1);
+						// Set snake direction
 						current->move(std::stoi(value));
-						current->addNewLastPart();
 					}
 					// Position x
 					else if (command.str()[0] == 'P' && command.str()[1] == 'x') {
@@ -237,12 +246,16 @@ ExternalSnake* Game::GetSnake(const int id) const {
 
 void Game::RemoveExternalSnake(const int id) {
 	ExternalSnake* current = enemyFirst_;
-	ExternalSnake* prev = nullptr;
+	ExternalSnake* prev = enemyFirst_;
 
 	while (current != nullptr) {
 		if (current->id == id) {
 			
-			if (current == enemyFirst_) {
+			if (current == enemyFirst_ && enemyFirst_ == enemyLast_) {
+				enemyFirst_ = nullptr;
+				enemyLast_ = nullptr;
+			}
+			else if (current == enemyFirst_) {
 				enemyFirst_ = enemyFirst_->next;
 			} else if (current == enemyLast_) {
 				enemyLast_ = prev;

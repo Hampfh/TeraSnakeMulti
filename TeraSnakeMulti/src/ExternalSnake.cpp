@@ -14,7 +14,7 @@ ExternalSnake::ExternalSnake(Grid* main_grid, const int start_x, const int start
 ExternalSnake::~ExternalSnake() {
 	auto current = _firstNode;
 	auto prev = _firstNode;
-	while (current != _firstNode) {
+	while (current != nullptr) {
 		current = current->next;
 		delete prev;
 		prev = current;
@@ -24,8 +24,11 @@ ExternalSnake::~ExternalSnake() {
 }
 
 void ExternalSnake::Update(const int* const length) {
-	while (snakeLength > *length) {
+	addNewLastPart();
+
+	if (snakeLength > * length) {
 		removeFirstPart();
 	}
+
 	draw();
 }
