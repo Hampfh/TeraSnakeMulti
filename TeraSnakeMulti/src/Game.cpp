@@ -35,18 +35,17 @@ int getPORT() {
 	return port;
 }
 
-Game::Game(Window* main_window) : window(main_window) {
-	//serverConnection = new client(getIP(), getPORT());
-	serverConnection_ = new client("127.0.0.1", 15000);
-	setup();
+Game::Game() {
+	serverConnection_ = new client(getIP(), getPORT());
+	//serverConnection_ = new client("127.0.0.1", 15000);
+	SetupGraphics();
 }
 
 Game::~Game() {
 }
 
-int Game::Loop() {
+int Game::Execute() {
 
-	std::string messageOut;
 	int laps = 0;
 
 	gameRunning_ = false;
@@ -59,27 +58,18 @@ int Game::Loop() {
 	while (true) {
 		pollEvents(window, playerSnake);
 
-		auto start = std::chrono::steady_clock::now();
 		serverConnection_->recvMessage(&incoming);
 		std::cout << "Received: " << incoming << std::endl;
-		auto end = std::chrono::steady_clock::now();
-		//std::cout << "Receive took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 		Interpret(incoming);
 
-		//if (playerSnake->dead && laps < 4 && laps >= 0) {
-		//	playerSnake->dead = false;
-		//}
-
 		// Update enemies
-		if (gameRunning_) {
+		if (gameRunning_)
 			UpdateExternals();
-		}
 
 		// Update player
 		if (gameRunning_ && playerSnake != nullptr && !playerSnake->dead) {
-			if (laps > 1)
-				playerSnake->Update(&playerExpectedLength, enemyFirst_);
+			playerSnake->Update(&playerExpectedLength, enemyFirst_);
 
 			outgoing = "M" + std::to_string(playerSnake->getDirection());
 		} else if (playerSnake != nullptr && !playerSnake->dead) {
@@ -118,15 +108,8 @@ int Game::Loop() {
 	return 0;
 }
 
-int Game::reset() {
-	delete mainGrid;
-	delete playerSnake;
-
-	playerExpectedLength = startLength;
-	return 1;
-}
-
-int Game::setup() {
+int Game::SetupGraphics() {
+	window = new Window("TeraSnake", 750, 840);
 
 	mainGrid = new Grid(gridWidth, gridHeight);
 	mainGrid->setSpacing(0);
@@ -136,12 +119,7 @@ int Game::setup() {
 
 	playerSnake = new player(mainGrid, 2 * serverConnection_->GetId(), 20, gridWidth, gridHeight);
 
-	setup_colors();
-
-	return 1;
-}
-
-int Game::setup_colors() {
+	// Setup colors
 	mainGrid->setColor(50, 50, 60);
 	playerSnake->setColor(0, 180, 50);
 	playerSnake->SetHeadColor(20, 20, 50);

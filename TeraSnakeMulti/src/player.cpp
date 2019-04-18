@@ -43,7 +43,6 @@ bool player::Update(int* expectedLength, ExternalSnake* enemy_first) {
 		addNewLastPart();
 	}
 
-	// TODO iterates through all players
 	if (enemy_first != nullptr) {
 		auto* current = enemy_first;
 
@@ -56,6 +55,7 @@ bool player::Update(int* expectedLength, ExternalSnake* enemy_first) {
 			current = current->next;
 		}
 	}
+	// TODO snake should crash into itself
 
 	if (snakeLength > *expectedLength) {
 		removeFirstPart();

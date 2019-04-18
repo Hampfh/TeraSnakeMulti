@@ -11,12 +11,10 @@
 class Game
 {
 public:
-	Game(Window* main_window);
-	~Game();
-	int Loop();
-	int reset();
-	int setup();
-	int setup_colors();
+	Game();
+	~Game();	
+	int Execute();
+	int SetupGraphics();
 	void Interpret(const std::string& incoming);
 	ExternalSnake* GetSnake(int id) const;
 	void RemoveExternalSnake(int id);
