@@ -1,8 +1,7 @@
 #pragma once
-#include "definitions.h"
+#include "Definitions.h"
 #include <Grid.h>
-class Snake
-{
+class Snake {
 public:
 	Snake();
 	~Snake();
@@ -16,20 +15,17 @@ public:
 	void removeSpecificPart(int x, int y);
 	void setColor(int r, int g, int b);
 	void SetHeadColor(int r, int g, int b);
-	inline Node* getFirstNode() { return _firstNode; };
-	inline Node* getLastNode() { return _lastNode; };
-	inline colorTemplate getColor() { return color; };
-	inline int getDirection() { return direction; };
+	Node* getFirstNode() { return _firstNode; };
+	Node* getLastNode() { return _lastNode; };
+	colorTemplate getColor() { return color_; };
+	int getDirection() { return direction_; };
 	int GetHeadX() const { return _snakeHead_x; };
 	int GetHeadY() const { return _snakeHead_y; };
-public:
-	int SNAKE_ID;
-	Grid* _mainGrid = nullptr;
 protected:
-	colorTemplate color;
+	colorTemplate color_;
 	colorTemplate head_;
-	int snakeLength;
-	int direction;
+	int length_;
+	int direction_;
 
 	int _snakeHead_x;
 	int _snakeHead_y;
@@ -38,5 +34,8 @@ protected:
 
 	Node* _firstNode = nullptr;
 	Node* _lastNode = nullptr;
+public:
+	int id;
+	Grid* mainGrid = nullptr;
 };
 

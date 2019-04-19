@@ -6,12 +6,12 @@
 #include <sstream>
 #include <vector>
 
-class player : public Snake
+class Player : public Snake
 {
 public:
-	player(Grid* mainGrid, int start_x, int start_y, int gridSize_x, int gridSize_y);
-	~player();
-	void pollEvent(SDL_Event &evnt);
+	Player(Grid* mainGrid, int start_x, int start_y, int gridSize_x, int gridSize_y);
+	~Player();
+	void PollEvent(SDL_Event &evnt);
 	bool Update(int* expectedLength, ExternalSnake* enemy_first);
 	std::string SnakeToString();
 

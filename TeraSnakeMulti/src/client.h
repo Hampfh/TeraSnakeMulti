@@ -7,25 +7,23 @@
 #include "Snake.h"
 #pragma comment(lib, "ws2_32.lib")
 
-class client
-{
+class Client {
 public:
-	client(std::string ipAdress = "127.0.0.1", int port = 54000);
-	~client();
-	int sendMessage(std::string message);
-	int recvMessage(std::string *message);
-	void getCollision(Snake* collisions, bool *dead);
-	bool recvdEcho();
-
+	Client(std::string ip_address = "127.0.0.1", int port = 54000);
+	~Client();
+	int Send(std::string message);
+	int Receive(std::string *message);
 	std::vector<std::vector<int>> StripCoordinates(std::string string) const;
+
+	void GetCollision(Snake* collisions, bool *dead);
 	int GetId() const { return clientId_; };
 private:
 	int clientId_;
-	SOCKET sock;
-	int sendResult;
+	SOCKET sock_;
+	int sendResult_;
 
 	// In and Output from server
-	char messageIn[1024];
-	std::string messageOut;
+	char messageIn_[1024];
+	std::string messageOut_;
 };
 

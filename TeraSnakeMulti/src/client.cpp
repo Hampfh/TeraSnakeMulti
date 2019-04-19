@@ -1,42 +1,42 @@
-#include "client.h"
+#include "Client.h"
 
-client::client(std::string ipAdress, int port){
+Client::Client(const std::string ip_address, int port){
 
 	// Initialize winsock
 	WSADATA data;
 	WORD ver = MAKEWORD(2, 2);
 	int wsResult = WSAStartup(ver, &data);
 	if (wsResult != 0) {
-		std::cerr << "Can't start winsock, Err #" << wsResult << std::endl;
+		std::cerr << "Can't start winsock2, Err #" << wsResult << std::endl;
 		return;
 	}
 
 	// Create socket
-	sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock == INVALID_SOCKET) {
+	sock_ = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock_ == INVALID_SOCKET) {
 		std::cerr << "Can't create socket, Err #" << WSAGetLastError() << std::endl;
 		WSACleanup();
 		return;
 	}
 
 	// Fill in an int structure
-	sockaddr_in hint;
+	sockaddr_in hint = sockaddr_in();
 	hint.sin_family = AF_INET;
 	hint.sin_port = htons(port);
-	inet_pton(AF_INET, ipAdress.c_str(), &hint.sin_addr);
+	inet_pton(AF_INET, ip_address.c_str(), &hint.sin_addr);
 
 	// Connect to server
-	int connResult = connect(sock, (sockaddr*)&hint, sizeof(hint));
+	int connResult = connect(sock_, reinterpret_cast<const sockaddr*>(&hint), sizeof(hint));
 	if (connResult == SOCKET_ERROR) {
 		std::cerr << "Can't connect to server, Err #" << WSAGetLastError << std::endl;
-		closesocket(sock);
+		closesocket(sock_);
 		WSACleanup();
 		return;
 	}
 
 	// Client receives welcome message, id and the server seed
 	std::string incoming;
-	recvMessage(&incoming);
+	Receive(&incoming);
 
 	const std::regex regexClient("[^\\|]+");
 	std::smatch matcher;
@@ -54,17 +54,17 @@ client::client(std::string ipAdress, int port){
 	clientId_ = std::stoi(segment[1]);
 }
 
-client::~client(){
-	closesocket(sock);
+Client::~Client(){
+	closesocket(sock_);
 	WSACleanup();
 	std::cout << "STATUS> Client disconnected" << std::endl;
 }
 
-int client::sendMessage(const std::string message) {
+int Client::Send(const std::string message) {
 	// Temporarly saves the message inside the class
-	messageOut = message;
+	messageOut_ = message;
 
-	if (send(sock, message.c_str(), message.size() + 1, 0) == SOCKET_ERROR) {
+	if (send(sock_, message.c_str(), message.size() + 1, 0) == SOCKET_ERROR) {
 		std::cout << "ERROR: " << WSAGetLastError() << std::endl;
 		return 1;
 	}
@@ -72,26 +72,26 @@ int client::sendMessage(const std::string message) {
 	return 0;
 }
 
-int client::recvMessage(std::string *message) {
-	ZeroMemory(messageIn, 1024);
-	int bytesReceived = recv(sock, messageIn, 1024, 0);
+int Client::Receive(std::string *message) {
+	ZeroMemory(messageIn_, 1024);
+	const int bytesReceived = recv(sock_, messageIn_, 1024, 0);
 
 	if (bytesReceived < 0) {
 		return 1;
 	}
 
-	*message = std::string(messageIn, bytesReceived + 1);
+	*message = std::string(messageIn_, bytesReceived + 1);
 
 	return 0;
 }
 
-void client::getCollision(Snake* collisions, bool *dead) {
+void Client::GetCollision(Snake* collisions, bool *dead) {
 
 	std::string receivedMessage;
 
 	const std::clock_t begin = clock();
 	// Receive from server
-	recvMessage(&receivedMessage);
+	Receive(&receivedMessage);
 	const std::clock_t end = clock();
 
 	const double elapsedTime = double(end - begin);
@@ -169,13 +169,13 @@ void client::getCollision(Snake* collisions, bool *dead) {
 	}
 }
 
-std::vector<std::vector<int>> client::StripCoordinates(std::string string) const {
+std::vector<std::vector<int>> Client::StripCoordinates(std::string string) const {
 	std::vector<std::vector<int>> coordinates;
 	std::smatch matcher;
 	const std::regex mainRegex("\\d+:\\d+");
 
 	// Get coordinates form string
-	// Strip player position
+	// Strip Player position
 	while (std::regex_search(string, matcher, mainRegex)) {
 		int x = 0, y = 0;
 

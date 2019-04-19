@@ -1,9 +1,9 @@
 #include "Snake.h"
 
 Snake::Snake() {
-	color.r = 0;
-	color.g = 0;
-	color.b = 0;
+	color_.r = 0;
+	color_.g = 0;
+	color_.b = 0;
 }
 
 
@@ -32,8 +32,8 @@ void Snake::addNewLastPart() {
 		_lastNode->next = temp;
 		_lastNode = _lastNode->next;
 	}
-	_lastNode->link = _mainGrid->dot(_snakeHead_x, _snakeHead_y);
-	snakeLength++;
+	_lastNode->link = mainGrid->dot(_snakeHead_x, _snakeHead_y);
+	length_++;
 }
 
 void Snake::addNewSpecificPart(int x, int y, int r, int g, int b) {
@@ -49,8 +49,8 @@ void Snake::addNewSpecificPart(int x, int y, int r, int g, int b) {
 		_lastNode->next = temp;
 		_lastNode = _lastNode->next;
 	}
-	_lastNode->link = _mainGrid->dot(x, y);
-	snakeLength++;
+	_lastNode->link = mainGrid->dot(x, y);
+	length_++;
 }
 
 bool Snake::Collision(const int x, const int y) {
@@ -81,7 +81,7 @@ void Snake::draw() {
 
 	while (currentPointer != _lastNode) {
 		if (currentPointer->thisNodeColor.r == -1 || currentPointer->thisNodeColor.g == -1 || currentPointer->thisNodeColor.b == -1) {
-			currentPointer->link->setColor(color.r, color.g, color.b);
+			currentPointer->link->setColor(color_.r, color_.g, color_.b);
 		}
 		else {
 			currentPointer->link->setColor(currentPointer->thisNodeColor.r, currentPointer->thisNodeColor.g, currentPointer->thisNodeColor.b);
@@ -124,8 +124,8 @@ void Snake::move(int direction) {
 	default:
 		return;
 	}
-	// If direction is valid then assign the snakes direction to it
-	this->direction = direction;
+	// If direction_ is valid then assign the snakes direction_ to it
+	this->direction_ = direction;
 }
 
 void Snake::move(const int x, const int y) {
@@ -137,7 +137,7 @@ void Snake::removeFirstPart() {
 	Node* prev = _firstNode;
 	_firstNode = _firstNode->next;
 	delete prev;
-	snakeLength--;
+	length_--;
 }
 void Snake::removeSpecificPart(int x, int y) {
 	Node* currentPointer = _firstNode;
@@ -173,9 +173,9 @@ void Snake::removeSpecificPart(int x, int y) {
 }
 
 void Snake::setColor(int r, int g, int b) {
-	color.r = r;
-	color.g = g;
-	color.b = b;
+	color_.r = r;
+	color_.g = g;
+	color_.b = b;
 }
 
 void Snake::SetHeadColor(const int r, const int g, const int b) {

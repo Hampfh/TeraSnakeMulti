@@ -2,7 +2,8 @@
 
 ExternalSnake::ExternalSnake(Grid* main_grid, const int start_x, const int start_y, const int grid_width, const int grid_height) {
 	id = -1;
-	_mainGrid = main_grid;
+	mainGrid = main_grid;
+	direction_ = 0;
 
 	_snakeHead_x = start_x;
 	_snakeHead_y = start_y;
@@ -24,11 +25,18 @@ ExternalSnake::~ExternalSnake() {
 }
 
 void ExternalSnake::Update(const int* const length) {
+	move(direction_);
 	addNewLastPart();
 
-	if (snakeLength > * length) {
+	if (length_ > * length) {
 		removeFirstPart();
 	}
 
 	draw();
 }
+
+void ExternalSnake::SetDirection(const int dir) {
+	if (dir >= 0 && dir <= 3) {
+		direction_ = dir;
+	}
+};

@@ -1,24 +1,13 @@
 #include "Game.h"
 
-void pollEvents(Window* window, player* player) {
-	SDL_Event evnt;
-
-	if (SDL_PollEvent(&evnt)) {
-		window->pollEvent(evnt);
-		if (player != nullptr && !player->dead) {
-			player->pollEvent(evnt);
-		}
-	}
-}
-
-std::string getIP() {
+std::string GetIp() {
 	std::string input;
 	std::cout << "ENTER SERVER IP\n> ";
 	std::getline(std::cin, input);
 	return input;
 }
 
-int getPORT() {
+int GetPort() {
 	int port;
 	std::string input;
 	while (true) {
@@ -36,93 +25,106 @@ int getPORT() {
 }
 
 Game::Game() {
-	serverConnection_ = new client(getIP(), getPORT());
-	//serverConnection_ = new client("127.0.0.1", 15000);
-	SetupGraphics();
-}
+	//serverConnection_ = new Client(GetIp(), GetPort());
+	serverConnection_ = new Client("127.0.0.1", 15000);
+	
+	// Check if connection is established
+	if (serverConnection_->Send("") == 0)
+		running_ = true;
+	else
+		running_ = false;
 
-Game::~Game() {
+	gameRunning_ = false;
 }
 
 int Game::Execute() {
 
-	int laps = 0;
+	Setup();
 
-	gameRunning_ = false;
+	while (running_) {
+		PollEvents();
+		Loop();
 
-	serverConnection_->sendMessage("");
-
-	std::string incoming;
-	std::string outgoing;
-
-	while (true) {
-		pollEvents(window, playerSnake);
-
-		serverConnection_->recvMessage(&incoming);
-		std::cout << "Received: " << incoming << std::endl;
-
-		Interpret(incoming);
-
-		// Update enemies
-		if (gameRunning_)
-			UpdateExternals();
-
-		// Update player
-		if (gameRunning_ && playerSnake != nullptr && !playerSnake->dead) {
-			playerSnake->Update(&playerExpectedLength, enemyFirst_);
-
-			outgoing = "M" + std::to_string(playerSnake->getDirection());
-		} else if (playerSnake != nullptr && !playerSnake->dead) {
-			outgoing = "Px" + std::to_string(playerSnake->GetHeadX()) + "|Py" + std::to_string(playerSnake->GetHeadY());
-		} else {
-			outgoing = "";
-		}
-
-		// Detect death
-		if (playerSnake != nullptr && playerSnake->dead) {
-			std::cout << "I died" << std::endl;
-			outgoing.append("|D");
-			delete playerSnake;
-			playerSnake = nullptr;
-		}
-
-		// Send
-		if (serverConnection_->sendMessage(outgoing) != 0) {
-			std::cout << "STATUS> Connection lost" << std::endl;
-			delete serverConnection_;
-			delete window;
-			break;
-		}
-
-		window->refresh(0, 0, 0);
-		mainGrid->clear();
-
-		if (window->isClosed()) {
-			break;
-		}
-		if (playerSnake != nullptr && !playerSnake->dead && gameRunning_) {
-			laps++;
-		}
+		if (window_->isClosed()) 
+			running_ = false;
 	}
 	system("pause");
 	return 0;
 }
 
-int Game::SetupGraphics() {
-	window = new Window("TeraSnake", 750, 840);
+void Game::PollEvents() const {
+	SDL_Event event;
 
-	mainGrid = new Grid(gridWidth, gridHeight);
-	mainGrid->setSpacing(0);
-	mainGrid->setDotSize(15);
-	mainGrid->clear();
-	window->connectGrid(mainGrid);
+	if (SDL_PollEvent(&event)) {
+		window_->pollEvent(event);
+		if (player_ != nullptr && !player_->dead) {
+			player_->PollEvent(event);
+		}
+	}
+}
 
-	playerSnake = new player(mainGrid, 2 * serverConnection_->GetId(), 20, gridWidth, gridHeight);
+void Game::Loop() {
+
+	std::string commandStorage;
+
+	serverConnection_->Receive(&commandStorage);
+
+	Interpret(commandStorage);
+
+	// Update enemies
+	if (gameRunning_)
+		UpdateExternals();
+
+	// Update Player
+	if (gameRunning_ && player_ != nullptr && !player_->dead) {
+		player_->Update(&playerExpectedLength_, enemyFirst_);
+
+		commandStorage = "M" + std::to_string(player_->getDirection());
+	}
+	else if (player_ != nullptr && !player_->dead) {
+		commandStorage = "Px" + std::to_string(player_->GetHeadX()) + "|Py" + std::to_string(player_->GetHeadY());
+	}
+	else {
+		commandStorage = "";
+	}
+
+	// Detect death
+	if (player_ != nullptr && player_->dead) {
+		std::cout << "I died" << std::endl;
+		commandStorage.append("|D");
+		delete player_;
+		player_ = nullptr;
+	}
+
+	// Send
+	if (serverConnection_->Send(commandStorage) != 0) {
+		std::cout << "STATUS> Connection lost" << std::endl;
+		delete serverConnection_;
+		delete window_;
+		running_ = false;
+		return;
+	}
+
+	window_->refresh(0, 0, 0);
+	mainGrid_->clear();
+}
+
+int Game::Setup() {
+	window_ = new Window("Tera Snake", 750, 840);
+
+	mainGrid_ = new Grid(gridWidth_, gridHeight_);
+	mainGrid_->setSpacing(0);
+	mainGrid_->setDotSize(15);
+	window_->connectGrid(mainGrid_);
+
+	player_ = new Player(mainGrid_, 2 * serverConnection_->GetId(), 20, gridWidth_, gridHeight_);
 
 	// Setup colors
-	mainGrid->setColor(50, 50, 60);
-	playerSnake->setColor(0, 180, 50);
-	playerSnake->SetHeadColor(20, 20, 50);
+	mainGrid_->setColor(50, 50, 60);
+	player_->setColor(0, 180, 50);
+	player_->SetHeadColor(20, 20, 50);
+
+	mainGrid_->clear();
 	return 1;
 }
 
@@ -146,10 +148,10 @@ void Game::Interpret(const std::string& incoming) {
 			ExternalSnake* current = nullptr;
 			int id = -1;
 
-			// Parse client command
+			// Parse Client command
 			while (std::regex_search(commandCopy, secondMatcher, regexCommand)) {
 
-				// Get the client from string
+				// Get the Client from string
 				if (id != 0) {
 					// Convert string to id
 					id = std::stoi(secondMatcher[0].str());
@@ -168,11 +170,11 @@ void Game::Interpret(const std::string& incoming) {
 				for (auto command : secondMatcher) {
 					// Check what kind of command the clients has sent
 					
-					// Specific Moving direction
+					// Specific Moving direction_
 					if (command.str()[0] == 'M' && current != nullptr) {
 						std::string value = command.str().substr(1, command.str().size() - 1);
-						// Set snake direction
-						current->move(std::stoi(value));
+						// Set snake direction_
+						current->SetDirection(std::stoi(value));
 					}
 					// Position x
 					else if (command.str()[0] == 'P' && command.str()[1] == 'x') {
@@ -184,7 +186,7 @@ void Game::Interpret(const std::string& incoming) {
 						std::string value = command.str().substr(2, command.str().size() - 2);
 						y = std::stoi(value);
 					}
-					// Check if client has disconnected
+					// Check if Client has disconnected
 					else if (command.str()[0] == 'D' && current != nullptr) {
 						std::cout << "Received remove command on snake: " << current->id << std::endl;
 						RemoveExternalSnake(current->id);
@@ -252,11 +254,10 @@ void Game::RemoveExternalSnake(const int id) {
 }
 
 ExternalSnake* Game::AddExternalSnake(const int id, const int x, const int y) {
-	ExternalSnake* newSnake = new ExternalSnake(mainGrid, x, y, gridWidth, gridHeight);
+	ExternalSnake* newSnake = new ExternalSnake(mainGrid_, x, y, gridWidth_, gridHeight_);
 
-	// Randomize a color for the new snake
-	time_t temp = id;
-	srand(id);
+	// Randomize a color_ for the new snake
+	srand(id * 10);
 	const int colorR = rand() % 255;
 	const int colorG = rand() % 255;
 	const int colorB = rand() % 255;
@@ -283,7 +284,7 @@ void Game::UpdateExternals() const {
 	ExternalSnake* current = enemyFirst_;
 
 	while (current != nullptr) {
-		current->Update(&playerExpectedLength);
+		current->Update(&playerExpectedLength_);
 		current = current->next;
 	}
 }

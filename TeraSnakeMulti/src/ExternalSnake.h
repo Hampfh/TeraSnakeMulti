@@ -9,6 +9,8 @@ public:
 
 	void Update(const int* length);
 
+	void SetDirection(int dir);
+
 	int id;
 	ExternalSnake* next = nullptr;
 };

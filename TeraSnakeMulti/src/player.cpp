@@ -1,7 +1,7 @@
-#include "player.h"
+#include "Player.h"
 
-player::player(Grid* mainGrid, int start_x, int start_y, int gridSize_x, int gridSize_y) {
-	_mainGrid = mainGrid;
+Player::Player(Grid* mainGrid, int start_x, int start_y, int gridSize_x, int gridSize_y) {
+	this->mainGrid = mainGrid;
 	
 	_snakeHead_x = start_x;
 	_snakeHead_y = start_y;
@@ -9,26 +9,26 @@ player::player(Grid* mainGrid, int start_x, int start_y, int gridSize_x, int gri
 	_gridSize_y = gridSize_y;
 }
 
-player::~player() {
+Player::~Player() {
 
 }
 
-void player::pollEvent(SDL_Event &evnt) {
+void Player::PollEvent(SDL_Event &evnt) {
 	switch (evnt.type) {
 		// This event get triggered when a key is pressed
 	case SDL_KEYDOWN:
 		switch (evnt.key.keysym.sym) {
 		case SDLK_UP:
-			direction != DIRECTION_DOWN ? direction = DIRECTION_UP : direction;
+			direction_ != DIRECTION_DOWN ? direction_ = DIRECTION_UP : direction_;
 			break;
 		case SDLK_RIGHT:
-			direction != DIRECTION_LEFT ? direction = DIRECTION_RIGHT : direction;
+			direction_ != DIRECTION_LEFT ? direction_ = DIRECTION_RIGHT : direction_;
 			break;
 		case SDLK_DOWN:
-			direction != DIRECTION_UP ? direction = DIRECTION_DOWN : direction;
+			direction_ != DIRECTION_UP ? direction_ = DIRECTION_DOWN : direction_;
 			break;
 		case SDLK_LEFT:
-			direction != DIRECTION_RIGHT ? direction = DIRECTION_LEFT : direction;
+			direction_ != DIRECTION_RIGHT ? direction_ = DIRECTION_LEFT : direction_;
 			break;
 		}
 	default:
@@ -36,10 +36,10 @@ void player::pollEvent(SDL_Event &evnt) {
 	}
 }
 
-bool player::Update(int* expectedLength, ExternalSnake* enemy_first) {
+bool Player::Update(int* expectedLength, ExternalSnake* enemy_first) {
 
 	if (!dead) {
-		move(direction);
+		move(direction_);
 		addNewLastPart();
 	}
 
@@ -57,7 +57,7 @@ bool player::Update(int* expectedLength, ExternalSnake* enemy_first) {
 	}
 	// TODO snake should crash into itself
 
-	if (snakeLength > *expectedLength) {
+	if (length_ > *expectedLength) {
 		removeFirstPart();
 	}
 

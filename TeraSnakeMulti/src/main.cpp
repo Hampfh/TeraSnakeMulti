@@ -6,7 +6,7 @@
 std::string playerName;
 int main(int argc, char** argv) {
 	Game game;
-	int state = game.Execute();
+	const int state = game.Execute();
 
 	switch (state) {
 	case 1:

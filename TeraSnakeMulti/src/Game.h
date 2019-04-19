@@ -1,42 +1,40 @@
 #pragma once
-#include "client.h"
+#include "Client.h"
 #include <Grid.h>
-#include "player.h"
+#include "Player.h"
 #include "ExternalSnake.h"
 #include <Window.h>
 #include <ctime>
-#include <time.h>
 #include <chrono>
 
-class Game
-{
+class Game {
 public:
 	Game();
-	~Game();	
+	int Setup();
 	int Execute();
-	int SetupGraphics();
+	void PollEvents() const;
+	void Loop();
 	void Interpret(const std::string& incoming);
 	ExternalSnake* GetSnake(int id) const;
 	void RemoveExternalSnake(int id);
 	ExternalSnake* AddExternalSnake(int id, int x, int y);
 	void UpdateExternals() const;
 private:
-	int gridWidth = 50, gridHeight = 50;
+	int gridWidth_ = 50, gridHeight_ = 50;
 
+	bool running_;
 	bool gameRunning_;
 
-	Window* window = nullptr;
-	Grid* mainGrid = nullptr;
-	player* playerSnake = nullptr;
+	Window* window_ = nullptr;
+	Grid* mainGrid_ = nullptr;
+	Player* player_ = nullptr;
 	
-	client* serverConnection_;
+	Client* serverConnection_;
 
 	ExternalSnake* enemyFirst_ = nullptr;
 	ExternalSnake* enemyLast_ = nullptr;
 
-	int playerExpectedLength = 30;
-	const int startLength = 3;
+	int playerExpectedLength_ = 30;
 
-	bool running = true;
 };
 
