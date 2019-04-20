@@ -4,6 +4,8 @@ Snake::Snake() {
 	color_.r = 0;
 	color_.g = 0;
 	color_.b = 0;
+
+	direction_ = 0;
 }
 
 

@@ -3,7 +3,6 @@
 ExternalSnake::ExternalSnake(Grid* main_grid, const int start_x, const int start_y, const int grid_width, const int grid_height) {
 	id = -1;
 	mainGrid = main_grid;
-	direction_ = 0;
 
 	_snakeHead_x = start_x;
 	_snakeHead_y = start_y;

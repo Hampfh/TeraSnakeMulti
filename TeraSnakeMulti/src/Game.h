@@ -17,6 +17,7 @@ public:
 	void Interpret(const std::string& incoming);
 	ExternalSnake* GetSnake(int id) const;
 	void RemoveExternalSnake(int id);
+	void RemoveAllExternals();
 	ExternalSnake* AddExternalSnake(int id, int x, int y);
 	void UpdateExternals() const;
 private:

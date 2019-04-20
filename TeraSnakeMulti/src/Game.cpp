@@ -68,6 +68,9 @@ void Game::Loop() {
 	std::string commandStorage;
 
 	serverConnection_->Receive(&commandStorage);
+#ifdef _DEBUG
+	std::cout << "Received: " << commandStorage << std::endl;
+#endif
 
 	Interpret(commandStorage);
 
@@ -136,7 +139,7 @@ void Game::Interpret(const std::string& incoming) {
 	std::string copy = incoming;
 
 	const std::regex regexClient("[^{}]+");
-	const std::regex regexCommand("[a-zA-Z0-9\\/\\(\\)&:;=<>]+");
+	const std::regex regexCommand("[a-zA-Z0-9\\/\\(\\)&:;=<>\\*]+");
 	std::smatch mainMatcher;
 	std::smatch secondMatcher;
 
@@ -148,11 +151,20 @@ void Game::Interpret(const std::string& incoming) {
 			ExternalSnake* current = nullptr;
 			int id = -1;
 
+			// Special commands
+			if (commandCopy == "*|D") {
+				// Remove all external snakes
+				std::cout << "Removing all externals" << std::endl;
+				RemoveAllExternals();
+				break;
+			}
+
 			// Parse Client command
 			while (std::regex_search(commandCopy, secondMatcher, regexCommand)) {
 
 				// Get the Client from string
 				if (id != 0) {
+					
 					// Convert string to id
 					id = std::stoi(secondMatcher[0].str());
 
@@ -164,6 +176,7 @@ void Game::Interpret(const std::string& incoming) {
 						current = AddExternalSnake(id, 2 * id, 20);
 					}
 					id = 0;
+					
 				}
 
 				int x = NULL, y = NULL;
@@ -251,6 +264,20 @@ void Game::RemoveExternalSnake(const int id) {
 		prev = current;
 		current = current->next;
 	}
+}
+
+void Game::RemoveAllExternals() {
+	ExternalSnake* current = enemyFirst_;
+	ExternalSnake* prev = enemyFirst_;
+
+	while (current != nullptr) {
+
+		current = current->next;
+		delete prev;
+		prev = current;
+	}
+	enemyFirst_ = nullptr;
+	enemyLast_ = nullptr;
 }
 
 ExternalSnake* Game::AddExternalSnake(const int id, const int x, const int y) {
