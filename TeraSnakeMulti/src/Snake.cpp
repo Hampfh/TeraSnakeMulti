@@ -78,7 +78,7 @@ bool Snake::Collision(const int x, const int y) {
 	return false;
 }
 
-void Snake::draw() {
+void Snake::Draw() {
 	Node* currentPointer = _firstNode;
 
 	while (currentPointer != _lastNode) {

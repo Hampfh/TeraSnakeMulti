@@ -20,6 +20,7 @@ public:
 	void RemoveAllExternals();
 	ExternalSnake* AddExternalSnake(int id, int x, int y);
 	void UpdateExternals() const;
+	void DrawExternals() const;
 private:
 	int gridWidth_ = 50, gridHeight_ = 50;
 

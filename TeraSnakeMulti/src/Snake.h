@@ -8,7 +8,7 @@ public:
 	void addNewLastPart();
 	void addNewSpecificPart(int x, int y, int r = -1, int g = -1, int b = -1);
 	bool Collision(int x, int y);
-	void draw();
+	void Draw();
 	void move(int direction);
 	void move(int x, int y);
 	void removeFirstPart();

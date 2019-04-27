@@ -30,8 +30,6 @@ void ExternalSnake::Update(const int* const length) {
 	if (length_ > * length) {
 		removeFirstPart();
 	}
-
-	draw();
 }
 
 void ExternalSnake::SetDirection(const int dir) {

@@ -108,6 +108,9 @@ void Game::Loop() {
 		return;
 	}
 
+	DrawExternals();
+	player_->Draw();
+
 	window_->refresh(0, 0, 0);
 	mainGrid_->clear();
 }
@@ -207,6 +210,17 @@ void Game::Interpret(const std::string& incoming) {
 					// Start game loop
 					else if (command.str()[0] == 'S') {
 						gameRunning_ = true;
+#ifdef _DEBUG
+						std::cout << "Starting game" << std::endl;
+#endif
+					}
+					// Pause game loop
+					else if (command.str()[0] == 'P') {
+						gameRunning_ = false;
+
+#ifdef _DEBUG
+						std::cout << "Pausing game" << std::endl;
+#endif
 					}
 
 					// Check if both x and y is set
@@ -312,6 +326,15 @@ void Game::UpdateExternals() const {
 
 	while (current != nullptr) {
 		current->Update(&playerExpectedLength_);
+		current = current->next;
+	}
+}
+
+void Game::DrawExternals() const {
+	ExternalSnake* current = enemyFirst_;
+
+	while (current != nullptr) {
+		current->Draw();
 		current = current->next;
 	}
 }

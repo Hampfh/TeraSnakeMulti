@@ -61,7 +61,5 @@ bool Player::Update(int* expectedLength, ExternalSnake* enemy_first) {
 		removeFirstPart();
 	}
 
-	draw();
-
 	return false;
 }
