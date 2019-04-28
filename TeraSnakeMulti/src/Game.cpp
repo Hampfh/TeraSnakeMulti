@@ -41,6 +41,7 @@ int Game::Execute() {
 
 	Setup();
 
+	int tick = 0;
 	while (running_) {
 		PollEvents();
 		Loop();
@@ -91,8 +92,12 @@ void Game::Loop() {
 		commandStorage = "";
 	}
 
+	if (player_ != nullptr) {
+		std::cout << "Position: " << player_->GetHeadX() << " : " << player_->GetHeadY() << std::endl;
+	}
+
 	// Detect death
-	if (player_ != nullptr && player_->dead) {
+	if (player_ != nullptr && player_->dead && gameRunning_) {
 		std::cout << "I died" << std::endl;
 		commandStorage.append("|D");
 		delete player_;
@@ -109,10 +114,16 @@ void Game::Loop() {
 	}
 
 	DrawExternals();
-	player_->Draw();
+	if (player_ != nullptr) {
+		player_->Draw();
+	}
 
 	window_->refresh(0, 0, 0);
 	mainGrid_->clear();
+
+	if (gameRunning_) {
+		gameTick_++;
+	}
 }
 
 int Game::Setup() {
@@ -124,6 +135,8 @@ int Game::Setup() {
 	window_->connectGrid(mainGrid_);
 
 	player_ = new Player(mainGrid_, 2 * serverConnection_->GetId(), 20, gridWidth_, gridHeight_);
+
+	std::cout << "Start position: " << 2 * serverConnection_->GetId() << " : " << 20 << std::endl;
 
 	// Setup colors
 	mainGrid_->setColor(50, 50, 60);
@@ -217,6 +230,7 @@ void Game::Interpret(const std::string& incoming) {
 					// Pause game loop
 					else if (command.str()[0] == 'P') {
 						gameRunning_ = false;
+						gameTick_ = 0;
 
 #ifdef _DEBUG
 						std::cout << "Pausing game" << std::endl;
@@ -225,8 +239,8 @@ void Game::Interpret(const std::string& incoming) {
 
 					// Check if both x and y is set
 					if (x != NULL && y != NULL && current != nullptr) {
-						current->addNewSpecificPart(x, y);
 						current->move(x, y);
+						current->addNewSpecificPart(x, y);
 						// Reset coordinates
 						x = NULL;
 						y = NULL;

@@ -22,6 +22,8 @@ public:
 	void UpdateExternals() const;
 	void DrawExternals() const;
 private:
+	int gameTick_ = 0;
+
 	int gridWidth_ = 50, gridHeight_ = 50;
 
 	bool running_;
