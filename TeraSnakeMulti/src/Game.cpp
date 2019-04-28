@@ -25,8 +25,7 @@ int GetPort() {
 }
 
 Game::Game() {
-	//serverConnection_ = new Client(GetIp(), GetPort());
-	serverConnection_ = new Client("127.0.0.1", 15000);
+	serverConnection_ = new Client(GetIp(), GetPort());
 	
 	// Check if connection is established
 	if (serverConnection_->Send("") == 0)
