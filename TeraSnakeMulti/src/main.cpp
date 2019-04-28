@@ -3,11 +3,10 @@
 #include <Windows.h>
 #include <iostream>
 
-Window* window = new Window("TeraSnake", 750, 840);
 std::string playerName;
 int main(int argc, char** argv) {
-	Game game(window);
-	int state = game.Loop();
+	Game game;
+	const int state = game.Execute();
 
 	switch (state) {
 	case 1:
